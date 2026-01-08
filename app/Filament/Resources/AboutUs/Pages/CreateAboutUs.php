@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Filament\Resources\AboutUs\Pages;
+
+use App\Filament\Resources\AboutUs\AboutUsResource;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateAboutUs extends CreateRecord
+{
+    protected static string $resource = AboutUsResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
+    }
+    
+    public function getTitle(): string
+    {
+        return 'Informasi Perusahaan';
+    }
+}
