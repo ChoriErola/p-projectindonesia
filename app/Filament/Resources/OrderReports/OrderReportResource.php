@@ -6,6 +6,7 @@ use App\Filament\Resources\OrderReports\Pages\ManageOrderReports;
 use App\Models\Order;
 use App\Models\OrderReport;
 use BackedEnum;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -18,8 +19,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use UnitEnum;
+use Illuminate\Database\Eloquent\Builder;
 
 class OrderReportResource extends Resource
 {
@@ -29,7 +32,7 @@ class OrderReportResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'order_code';
     protected static string|UnitEnum|null $navigationGroup = 'Orders';
-    protected static ?string $navigationLabel = 'Laporan Order';
+    protected static ?string $navigationLabel = 'Laporan Pesanan';
 
     public static function canCreate(): bool { return false; }
     public static function canEdit($record): bool { return false; }
@@ -57,7 +60,7 @@ class OrderReportResource extends Resource
                 TextColumn::make('order_code')
                     ->searchable(),
                 TextColumn::make('event_date')
-                    ->label('Tanggal Order')
+                    ->label('Tanggal Acara')
                     ->date('d M Y')
                     ->sortable(),
                 TextColumn::make('package.name')
@@ -101,27 +104,24 @@ class OrderReportResource extends Resource
                         'cancelled' => 'Cancelled',
                     ]),
 
-                // TextColumn::make('services_count')
-                //     ->label('Detail Layanan')
-                //     ->formatStateUsing(function (Order $record) {
-                //         if ($record->services->isEmpty()) {
-                //             return 'Tidak ada Layanan';
-                //         }
-                //         return $record->services
-                //             ->map(function ($service) {
-                //                 $label = $service->service->name;
-                //                 $price = number_format($service->price, 0, ',', '.');
-                                
-                //                 if ($service->is_custom) {
-                //                     return "{$label} (Rp {$price})";
-                //                 }
-
-                //                 return "{$label} (Rp {$price})";
-                //             })
-                //             ->implode("\n");
-                //     })
-                //     ->listWithLineBreaks()
-                //     ->wrap(),
+                Filter::make('event_date')
+                    ->form([
+                        \Filament\Forms\Components\DatePicker::make('event_date_from')
+                            ->label('Tanggal Mulai'),
+                        \Filament\Forms\Components\DatePicker::make('event_date_until')
+                            ->label('Tanggal Selesai'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['event_date_from'],
+                                fn (Builder $q) => $q->whereDate('event_date', '>=', $data['event_date_from']),
+                            )
+                            ->when(
+                                $data['event_date_until'],
+                                fn (Builder $q) => $q->whereDate('event_date', '<=', $data['event_date_until']),
+                            );
+                    }),
             ])
             ->actions([
                 Action::make('viewInvoice')
@@ -133,9 +133,7 @@ class OrderReportResource extends Resource
                     ->openUrlInNewTab(),
             ])
             ->toolbarActions([
-                // BulkActionGroup::make([
-                //     DeleteBulkAction::make(),
-                // ]),
+                // Export button sudah ada di halaman ManageOrderReports
             ]);
     }
 
@@ -145,4 +143,5 @@ class OrderReportResource extends Resource
             'index' => ManageOrderReports::route('/'),
         ];
     }
+
 }

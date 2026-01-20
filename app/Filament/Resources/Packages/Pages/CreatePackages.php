@@ -16,6 +16,6 @@ class CreatePackages extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Kontak';
+        return 'Paket';
     }
 }

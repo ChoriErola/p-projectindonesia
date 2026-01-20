@@ -3,12 +3,9 @@
 namespace App\Services;
 
 use App\Invoices\CompanySeller;
-use App\Models\ContactUs;
 use App\Models\Order;
-use LaravelDaily\Invoices\Invoice;
 use LaravelDaily\Invoices\Classes\Buyer;
 use LaravelDaily\Invoices\Classes\InvoiceItem;
-use LaravelDaily\Invoices\Classes\Seller;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\View;
 

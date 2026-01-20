@@ -22,7 +22,7 @@ class OrderHistoriesResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'id';
-    protected static ?string $pluralLabel = 'Riwayat Order';
+    protected static ?string $pluralLabel = 'Riwayat Pesanan';
     protected static string|UnitEnum|null $navigationGroup = 'Orders';
 
     public static function form(Schema $schema): Schema
