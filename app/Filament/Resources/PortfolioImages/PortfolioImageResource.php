@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
 class PortfolioImageResource extends Resource
@@ -22,9 +23,14 @@ class PortfolioImageResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
     
     protected static ?string $recordTitleAttribute = 'image';
-    protected static string|UnitEnum|null $navigationGroup = 'Content';
+    protected static string|UnitEnum|null $navigationGroup = 'Informasi';
     protected static ?string $navigationLabel = 'Portfolio';
     protected static ?string $pluralLabel = 'Portfolio';
+
+    public static function canAccess(array $parameters = []): bool
+    {
+        return Auth::check() && Auth::user()->role === 'admin';
+    }
 
     public static function form(Schema $schema): Schema
     {

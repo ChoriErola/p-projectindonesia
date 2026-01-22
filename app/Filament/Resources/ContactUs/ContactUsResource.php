@@ -14,16 +14,22 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
+use Illuminate\Support\Facades\Auth;
 
 class ContactUsResource extends Resource
 {
     protected static ?string $model = ContactUs::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-    protected static string|UnitEnum|null $navigationGroup = 'Content';
+    protected static string|UnitEnum|null $navigationGroup = 'Informasi';
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $navigationLabel = 'Kontak';
     protected static ?string $pluralLabel = 'Kontak';
+
+    public static function canAccess(array $parameters = []): bool
+    {
+        return Auth::check() && Auth::user()->role === 'admin';
+    }
 
     public static function form(Schema $schema): Schema
     {

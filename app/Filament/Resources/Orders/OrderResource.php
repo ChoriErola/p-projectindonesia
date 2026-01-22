@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
+use Illuminate\Support\Facades\Auth;
 
 class OrderResource extends Resource
 {
@@ -22,7 +23,7 @@ class OrderResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
     protected static ?string $recordTitleAttribute = 'order_code';
     protected static ?string $pluralLabel = 'Pesanan';
-    protected static string|UnitEnum|null $navigationGroup = 'Orders';
+    protected static string|UnitEnum|null $navigationGroup = 'Pesanan';
     protected static ?string $navigationLabel = 'Pesanan';
     protected static ?int $navigationSort = 30;
 
@@ -50,5 +51,11 @@ class OrderResource extends Resource
             'create' => CreateOrder::route('/create'),
             'edit' => EditOrder::route('/{record}/edit'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        // Hanya admin yang bisa melihat resource ini
+        return Auth::check() && Auth::user()->role === 'admin';
     }
 }

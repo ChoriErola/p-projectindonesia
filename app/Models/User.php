@@ -25,6 +25,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
     const ROLE_ADMIN = 'admin';
     const ROLE_PELANGGAN = 'pelanggan';
+    const ROLE_PEMILIK = 'pemilik';
     
     protected $fillable = [
         'name',

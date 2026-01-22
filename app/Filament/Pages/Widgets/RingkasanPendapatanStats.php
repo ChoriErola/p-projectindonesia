@@ -35,7 +35,7 @@ class RingkasanPendapatanStats extends StatsOverviewWidget
             ]);
 
         return [
-            Stat::make('Total Order', (clone $query)->count())
+            Stat::make('Total Pesanan', (clone $query)->count())
                 ->icon('heroicon-o-document-text')
                 ->color('info'),
 

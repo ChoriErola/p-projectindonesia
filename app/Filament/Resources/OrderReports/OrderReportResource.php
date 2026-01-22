@@ -31,7 +31,7 @@ class OrderReportResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentChartBar;
 
     protected static ?string $recordTitleAttribute = 'order_code';
-    protected static string|UnitEnum|null $navigationGroup = 'Orders';
+    protected static string|UnitEnum|null $navigationGroup = 'Pesanan';
     protected static ?string $navigationLabel = 'Laporan Pesanan';
 
     public static function canCreate(): bool { return false; }
@@ -55,9 +55,10 @@ class OrderReportResource extends Resource
             ->query(Order::query()->with('customer', 'package', 'services'))
             ->columns([
                 TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label('Pelanggan')
                     ->searchable(),
                 TextColumn::make('order_code')
+                    ->label('Kode Order')
                     ->searchable(),
                 TextColumn::make('event_date')
                     ->label('Tanggal Acara')

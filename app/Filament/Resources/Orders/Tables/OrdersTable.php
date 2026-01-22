@@ -30,7 +30,7 @@ class OrdersTable
                     ->searchable()
                     ->copyable(),
                 TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label('Pelanggan')
                     ->searchable(),
                 TextColumn::make('acara')
                     ->label('Acara')

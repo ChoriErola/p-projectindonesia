@@ -34,12 +34,12 @@ class OrderHistoriesTable
             ->groupingSettingsHidden()
             ->columns([
                 TextColumn::make('order.order_code')
-                    ->label('Order Code')
+                    ->label('Kode Order')
                     ->searchable()
                     ->copyable()
                     ->sortable(),
                 TextColumn::make('order.customer.name')
-                    ->label('Nama Pelanggan')
+                    ->label('Pelanggan')
                     ->searchable()
                     ->sortable(),   
                 TextColumn::make('old_status')
@@ -67,7 +67,7 @@ class OrderHistoriesTable
                     ->label('Kode Order')
                     ->relationship('order', 'order_code'),
                 SelectFilter::make('customer_id')
-                    ->label('Nama Pelanggan')
+                    ->label('Pelanggan')
                     ->relationship('order.customer', 'name'),
                 SelectFilter::make('created_at')
                     ->label('Tanggal Perubahan')
@@ -112,9 +112,9 @@ class OrderHistoriesTable
             Section::make('Informasi Pesanan')
                 ->schema([
                     TextEntry::make('order.order_code')
-                        ->label('Order Code'),
+                        ->label('Kode Order'),
                     TextEntry::make('order.customer.name')
-                        ->label('Nama Pelanggan'),
+                        ->label('Pelanggan'),
                     TextEntry::make('order.total_price')
                         ->label('Harga Total')
                         ->formatStateUsing(fn ($state) =>

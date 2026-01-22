@@ -12,7 +12,7 @@ class ListUsers extends ListRecords
 
     public function getTitle(): string
     {
-        return 'Portofolio';
+        return 'Pengguna';
     }
 
     protected function getHeaderActions(): array

@@ -64,6 +64,4 @@ class UserResource extends Resource
         // Hanya user dengan role 'admin' yang bisa melihat dan mengelola user lain.
         return Auth::user() && Auth::user()->role === 'admin';
     }
-
-    
 }

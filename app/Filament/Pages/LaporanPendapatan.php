@@ -22,7 +22,7 @@ class LaporanPendapatan extends Page implements HasTable
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentChartBar;
     protected static ?string $navigationLabel = 'Laporan Pendapatan';
-    protected static string|UnitEnum|null $navigationGroup = 'Orders';
+    protected static string|UnitEnum|null $navigationGroup = 'Pesanan';
     protected static ?string $title = 'Laporan Pendapatan';
     protected string $view = 'filament.pages.laporan-pendapatan';
 
