@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
 class PackagesResource extends Resource
@@ -51,9 +52,34 @@ class PackagesResource extends Resource
     {
         return [
             'index' => ListPackages::route('/'),
-            'create' => CreatePackages::route('/create'),
-            // 'view' => ViewPackages::route('/{record}'),
-            'edit' => EditPackages::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        $user = Auth::user();
+        // Hanya admin yang bisa buat, owner/pemilik tidak
+        return $user && $user->role !== \App\Models\User::ROLE_PEMILIK;
+    }
+
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        $user = Auth::user();
+        // Hanya admin yang bisa edit, owner/pemilik tidak
+        return $user && $user->role !== \App\Models\User::ROLE_PEMILIK;
+    }
+
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        $user = Auth::user();
+        // Hanya admin yang bisa hapus, owner/pemilik tidak
+        return $user && $user->role !== \App\Models\User::ROLE_PEMILIK;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        $user = Auth::user();
+        // Hanya admin yang bisa bulk delete, owner/pemilik tidak
+        return $user && $user->role !== \App\Models\User::ROLE_PEMILIK;
     }
 }

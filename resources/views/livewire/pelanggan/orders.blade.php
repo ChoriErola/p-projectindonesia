@@ -227,17 +227,40 @@
                                             <h6 style="font-weight: 600; color: #333; margin-bottom: 12px;">Detail Pembayaran:</h6>
                                             @php
                                                 $totalPrice = $order->total_price ?? 0;
-                                                $amountPaid = $order->amount_paid ?? 0;
-                                                $remainingPayment = max(0, $totalPrice - $amountPaid);
+                                                $dp1 = (float) ($order->dp_1_amount ?? 0);
+                                                $dp2 = (float) ($order->dp_2_amount ?? 0);
+                                                $dp3 = (float) ($order->dp_3_amount ?? 0);
+                                                $totalPaid = $dp1 + $dp2 + $dp3;
+                                                $remainingPayment = max(0, $totalPrice - $totalPaid);
                                             @endphp
                                             <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0;">
                                                 <span style="font-weight: 600; color: #333;">Total Harga</span>
                                                 <span style="color: #a8729a; font-weight: 600;">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
                                             </div>
+                                            @if($totalPaid > 0)
                                             <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0;">
                                                 <span style="font-weight: 600; color: #333;">Pembayaran Diterima</span>
-                                                <span style="color: #28a745; font-weight: 600;">Rp {{ number_format($amountPaid, 0, ',', '.') }}</span>
+                                                <span style="color: #28a745; font-weight: 600;">Rp {{ number_format($totalPaid, 0, ',', '.') }}</span>
                                             </div>
+                                            @if($dp1 > 0)
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; padding-left: 12px; font-size: 13px;">
+                                                <span style="color: #666;">└─ DP 1 (Uang Muka)</span>
+                                                <span style="color: #666;">Rp {{ number_format($dp1, 0, ',', '.') }}</span>
+                                            </div>
+                                            @endif
+                                            @if($dp2 > 0)
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; padding-left: 12px; font-size: 13px;">
+                                                <span style="color: #666;">└─ DP 2 (Cicilan)</span>
+                                                <span style="color: #666;">Rp {{ number_format($dp2, 0, ',', '.') }}</span>
+                                            </div>
+                                            @endif
+                                            @if($dp3 > 0)
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding-left: 12px; font-size: 13px; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px;">
+                                                <span style="color: #666;">└─ DP 3 (Pelunasan)</span>
+                                                <span style="color: #666;">Rp {{ number_format($dp3, 0, ',', '.') }}</span>
+                                            </div>
+                                            @endif
+                                            @endif
                                             <div style="display: flex; justify-content: space-between; padding-top: 8px;">
                                                 <span style="font-weight: 600; color: #333;">Sisa Pembayaran</span>
                                                 <span style="color: @if($remainingPayment == 0) #28a745 @else #dc2626 @endif; font-weight: 600; font-size: 16px;">Rp {{ number_format($remainingPayment, 0, ',', '.') }}</span>

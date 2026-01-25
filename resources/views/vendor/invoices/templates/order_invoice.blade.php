@@ -331,19 +331,19 @@
             </div>
             @if($dp1 > 0)
             <div class="payment-details-row" style="font-size: 11px; padding: 6px 0;">
-                <span class="payment-details-label">└─ DP 1 (Uang Muka)</span>
+                <span class="payment-details-label">DP 1</span>
                 <span class="payment-details-value">Rp {{ number_format($dp1, 0, ',', '.') }}</span>
             </div>
             @endif
             @if($dp2 > 0)
             <div class="payment-details-row" style="font-size: 11px; padding: 6px 0;">
-                <span class="payment-details-label">└─ DP 2 (Cicilan)</span>
+                <span class="payment-details-label">DP 2</span>
                 <span class="payment-details-value">Rp {{ number_format($dp2, 0, ',', '.') }}</span>
             </div>
             @endif
             @if($dp3 > 0)
             <div class="payment-details-row" style="font-size: 11px; padding: 6px 0;">
-                <span class="payment-details-label">└─ DP 3 (Pelunasan)</span>
+                <span class="payment-details-label">DP 3 (Pelunasan)</span>
                 <span class="payment-details-value">Rp {{ number_format($dp3, 0, ',', '.') }}</span>
             </div>
             @endif

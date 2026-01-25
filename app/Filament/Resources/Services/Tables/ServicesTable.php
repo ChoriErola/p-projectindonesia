@@ -10,11 +10,15 @@ use Filament\Actions\DeleteAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class ServicesTable
 {
     public static function configure(Table $table): Table
     {
+        $user = Auth::user();
+        $isPemilik = $user && $user->role === \App\Models\User::ROLE_PEMILIK;
+
         return $table
             ->columns([
                 TextColumn::make('name')
@@ -49,8 +53,12 @@ class ServicesTable
             ])
             ->recordActions([
                 ViewAction::make()->iconButton(),
-                EditAction::make()->iconButton(),
-                DeleteAction::make()->iconButton(),
+                EditAction::make()
+                    ->iconButton()
+                    ->visible(!$isPemilik),
+                DeleteAction::make()
+                    ->iconButton()
+                    ->visible(!$isPemilik),
             ])
             ->toolbarActions([
                 // BulkActionGroup::make([

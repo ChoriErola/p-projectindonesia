@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Packages\Pages;
 use App\Filament\Resources\Packages\PackagesResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Facades\Auth;
 
 class ListPackages extends ListRecords
 {
@@ -17,9 +18,13 @@ class ListPackages extends ListRecords
 
     protected function getHeaderActions(): array
     {
+        $user = Auth::user();
+        $isPemilik = $user && $user->role === \App\Models\User::ROLE_PEMILIK;
+
         return [
             CreateAction::make()
-                ->label('Buat Paket'),
+                ->label('Buat Paket')
+                ->visible(!$isPemilik),
         ];
     }
 }

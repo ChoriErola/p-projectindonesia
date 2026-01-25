@@ -13,11 +13,15 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class OrderHistoriesTable
 {
     public static function configure(Table $table): Table
     {
+        $user = Auth::user();
+        $isPemilik = $user && $user->role === \App\Models\User::ROLE_PEMILIK;
+
         return $table
             ->groups([
                 Group::make('order.order_code')
@@ -93,7 +97,9 @@ class OrderHistoriesTable
                     ->modalWidth('lg') // Mengatur lebar modal
                     ->infolist(static::getViewInfolist()), // Memanggil schema yang kita buat di atas
                 
-                DeleteAction::make()->iconButton(),
+                DeleteAction::make()
+                    ->iconButton()
+                    ->visible(!$isPemilik),
             ])
                 ->toolbarActions([
                 // BulkActionGroup::make([
