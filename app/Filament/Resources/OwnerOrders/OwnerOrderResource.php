@@ -20,8 +20,8 @@ class OwnerOrderResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedInbox;
     protected static ?string $recordTitleAttribute = 'order_code';
-    protected static ?string $navigationLabel = 'Order Masuk';
-    protected static ?string $pluralLabel = 'Order Masuk';
+    protected static ?string $navigationLabel = 'Pesanan Masuk';
+    protected static ?string $pluralLabel = 'Pesanan Masuk';
     protected static string|UnitEnum|null $navigationGroup = 'Pesanan';
 
     public static function table(Table $table): Table
