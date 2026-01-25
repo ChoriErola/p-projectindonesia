@@ -178,43 +178,91 @@ class EditOrderForm
                                 ->visible(fn ($livewire) =>
                                     in_array($livewire->record?->status, ['paid in progress'])
                                 ),
-                                TextInput::make('amount_paid')
-                        ->label('Pembayaran Diterima')
+                    // DP 1 - Selalu muncul (pembayaran pertama)
+                    TextInput::make('dp_1_amount')
+                        ->label('DP 1 - Uang Muka (40% disarankan)')
                         ->numeric()
                         ->prefix('Rp')
                         ->nullable()
                         ->columnSpanFull()
                         ->reactive()
-                        ->afterStateUpdated(fn ($set, $get) => $set('remaining_payment', max(0, (float)($get('total_price') ?? 0) - (float)($get('amount_paid') ?? 0))))
-                        ->helperText('Jumlah pembayaran yang sudah diterima dari pelanggan')
+                        ->helperText('Input ketika pelanggan mengirimkan pembayaran pertama')
                         ->visible(fn ($livewire) =>
                             in_array($livewire->record?->status, [
                                 'paid in progress',
                             ])
                         ),
-                    TextInput::make('remaining_payment')
-                        ->label('Sisa Pembayaran')
+                    
+                    // DP 2 - Hanya muncul jika DP 1 sudah ada
+                    TextInput::make('dp_2_amount')
+                        ->label('DP 2 - Cicilan (30% disarankan)')
+                        ->numeric()
+                        ->prefix('Rp')
+                        ->nullable()
+                        ->columnSpanFull()
+                        ->reactive()
+                        ->helperText('Input ketika pelanggan mengirimkan pembayaran kedua')
+                        ->visible(function ($livewire, $get) {
+                            // Hanya visible jika status paid in progress dan DP 1 sudah ada
+                            if (!in_array($livewire->record?->status, ['paid in progress'])) {
+                                return false;
+                            }
+                            return !empty($get('dp_1_amount'));
+                        }),
+                    
+                    // DP 3 - Hanya muncul jika DP 2 sudah ada
+                    TextInput::make('dp_3_amount')
+                        ->label('DP 3 - Pelunasan (Sisa pembayaran)')
+                        ->numeric()
+                        ->prefix('Rp')
+                        ->nullable()
+                        ->columnSpanFull()
+                        ->reactive()
+                        ->helperText('Input ketika pelanggan mengirimkan pembayaran terakhir')
+                        ->visible(function ($livewire, $get) {
+                            // Hanya visible jika status paid in progress, DP 1 dan DP 2 sudah ada
+                            if (!in_array($livewire->record?->status, ['paid in progress'])) {
+                                return false;
+                            }
+                            return !empty($get('dp_1_amount')) && !empty($get('dp_2_amount'));
+                        }),
+                    
+                    // Summary pembayaran
+                    TextInput::make('total_paid_summary')
+                        ->label('Total Pembayaran Diterima')
                         ->numeric()
                         ->prefix('Rp')
                         ->disabled()
-                        ->dehydrated()
+                        ->dehydrated(false)
                         ->columnSpanFull()
                         ->reactive()
                         ->formatStateUsing(function ($state, $get) {
-                            $totalPrice = (float) ($get('total_price') ?? 0);
-                            $amountPaid = (float) ($get('amount_paid') ?? 0);
-                            return max(0, $totalPrice - $amountPaid);
+                            $dp1 = (float) ($get('dp_1_amount') ?? 0);
+                            $dp2 = (float) ($get('dp_2_amount') ?? 0);
+                            $dp3 = (float) ($get('dp_3_amount') ?? 0);
+                            return $dp1 + $dp2 + $dp3;
                         })
                         ->visible(fn ($livewire) =>
                             in_array($livewire->record?->status, [
                                 'paid in progress',
                             ])
                         ),
-                    Textarea::make('payment_note')
-                        ->label('Catatan Pembayaran')
-                        ->nullable()
+                    
+                    TextInput::make('remaining_payment')
+                        ->label('Sisa Pembayaran')
+                        ->numeric()
+                        ->prefix('Rp')
+                        ->disabled()
+                        ->dehydrated(false)
                         ->columnSpanFull()
-                        ->placeholder('Masukkan catatan terkait pembayaran...')
+                        ->reactive()
+                        ->formatStateUsing(function ($state, $get) {
+                            $totalPrice = (float) ($get('total_price') ?? 0);
+                            $dp1 = (float) ($get('dp_1_amount') ?? 0);
+                            $dp2 = (float) ($get('dp_2_amount') ?? 0);
+                            $dp3 = (float) ($get('dp_3_amount') ?? 0);
+                            return max(0, $totalPrice - ($dp1 + $dp2 + $dp3));
+                        })
                         ->visible(fn ($livewire) =>
                             in_array($livewire->record?->status, [
                                 'paid in progress',

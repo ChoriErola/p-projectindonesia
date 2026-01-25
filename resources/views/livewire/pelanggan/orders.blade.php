@@ -87,10 +87,10 @@
                             <div class="col-md-10">
                                 @php
                                 $progress = match($order->status) {
-                                    'pending' => 25,
-                                    'confirmed' => 50,
-                                    'paid in progress' => 75,
-                                    'paid completed' => 75,
+                                    'pending' => 20,
+                                    'confirmed' => 40,
+                                    'paid in progress' => 60,
+                                    'paid completed' => 80,
                                     'completed' => 100,
                                     'cancelled' => 0,
                                     default => 10,
@@ -125,7 +125,7 @@
                         @if($optionalServices->isNotEmpty())
                         <div class="mb-4">
                             <hr class="mb-3">
-                            <p class="text-muted mb-3 fw-bold">Layanan Tambahan (Opsional)</p>
+                            <p class="text-muted mb-3 fw-bold">Layanan Tambahan</p>
                             <div class="row">
                                 @foreach($optionalServices as $service)
                                 <div class="col-md-6 mb-2">

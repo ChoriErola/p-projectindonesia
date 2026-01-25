@@ -292,9 +292,6 @@
 <div class="notes">
     <strong>Catatan</strong>
     {{($order->notes)}}
-    <br><br>
-    <strong>Catatan Pembayaran</strong>
-    {{($order->payment_note)}}
 </div>
 @endif
 <br>
@@ -314,8 +311,12 @@
     {{-- SISA PEMBAYARAN --}}
     @php
         $totalPrice = $order->total_price ?? 0;
-        $amountPaid = $order->amount_paid ?? 0;
-        $remainingPayment = max(0, $totalPrice - $amountPaid);
+        // Hitung dari DP 1, DP 2, DP 3 (sistem pembayaran bertahap)
+        $dp1 = (float) ($order->dp_1_amount ?? 0);
+        $dp2 = (float) ($order->dp_2_amount ?? 0);
+        $dp3 = (float) ($order->dp_3_amount ?? 0);
+        $totalPaid = $dp1 + $dp2 + $dp3;
+        $remainingPayment = max(0, $totalPrice - $totalPaid);
     @endphp
     <div class="remaining-payment">
         <div class="payment-details">
@@ -323,11 +324,29 @@
                 <span class="payment-details-label">Total Harga</span>
                 <span class="payment-details-value">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
             </div>
-            @if($amountPaid > 0)
+            @if($totalPaid > 0)
             <div class="payment-details-row">
                 <span class="payment-details-label">Pembayaran Diterima</span>
-                <span class="payment-details-value">Rp {{ number_format($amountPaid, 0, ',', '.') }}</span>
+                <span class="payment-details-value">Rp {{ number_format($totalPaid, 0, ',', '.') }}</span>
             </div>
+            @if($dp1 > 0)
+            <div class="payment-details-row" style="font-size: 11px; padding: 6px 0;">
+                <span class="payment-details-label">└─ DP 1 (Uang Muka)</span>
+                <span class="payment-details-value">Rp {{ number_format($dp1, 0, ',', '.') }}</span>
+            </div>
+            @endif
+            @if($dp2 > 0)
+            <div class="payment-details-row" style="font-size: 11px; padding: 6px 0;">
+                <span class="payment-details-label">└─ DP 2 (Cicilan)</span>
+                <span class="payment-details-value">Rp {{ number_format($dp2, 0, ',', '.') }}</span>
+            </div>
+            @endif
+            @if($dp3 > 0)
+            <div class="payment-details-row" style="font-size: 11px; padding: 6px 0;">
+                <span class="payment-details-label">└─ DP 3 (Pelunasan)</span>
+                <span class="payment-details-value">Rp {{ number_format($dp3, 0, ',', '.') }}</span>
+            </div>
+            @endif
             @endif
             <div class="payment-details-row">
                 <span class="payment-details-label">Sisa Pembayaran</span>
