@@ -158,7 +158,7 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <p class="text-muted mb-0">Lihat Pembayaran</p>
-                            @if($order->payment_note || (isset($order->bukti_pembayaran) && count($order->bukti_pembayaran ?? []) > 0))
+                            @if(isset($order->bukti_pembayaran) && count($order->bukti_pembayaran ?? []) > 0)
                                 <button type="button" 
                                         class="btn btn-sm btn-link p-0 ms-2" 
                                         style="color: #a8729a; text-decoration: none; font-size: 18px;"
@@ -170,7 +170,7 @@
                         </div>
 
                         {{-- PAYMENT MODAL --}}
-                        @if($order->payment_note || (isset($order->bukti_pembayaran) && count($order->bukti_pembayaran ?? []) > 0))
+                        @if(isset($order->bukti_pembayaran) && count($order->bukti_pembayaran ?? []) > 0)
                         <div class="modal fade" id="paymentModal{{ $order->id }}" tabindex="-1" aria-labelledby="paymentModalLabel{{ $order->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
@@ -179,14 +179,6 @@
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        @if($order->payment_note)
-                                            <div class="mb-4">
-                                                <h6 style="font-weight: 600; color: #333; margin-bottom: 12px;">Catatan Pembayaran:</h6>
-                                                <div style="background-color: #f8f9fa; padding: 12px; border-radius: 6px; border-left: 4px solid #a8729a;">
-                                                    {!! nl2br(e($order->payment_note)) !!}
-                                                </div>
-                                            </div>
-                                        @endif
 
                                         @if(isset($order->bukti_pembayaran) && count($order->bukti_pembayaran ?? []) > 0)
                                             <div>
@@ -219,6 +211,38 @@
                                                 </div>
                                             </div>
                                         @endif
+
+                                        {{-- PAYMENT NOTE --}}
+                                        @if(!empty($order->payment_note))
+                                        <div style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
+                                            <h6 style="font-weight: 600; color: #333; margin-bottom: 8px;">Catatan Pembayaran:</h6>
+                                            <p style="color: #666; font-size: 14px; line-height: 1.6;">
+                                                {{ $order->payment_note }}
+                                            </p>
+                                        </div>
+                                        @endif
+
+                                        {{-- PAYMENT DETAILS --}}
+                                        <div style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
+                                            <h6 style="font-weight: 600; color: #333; margin-bottom: 12px;">Detail Pembayaran:</h6>
+                                            @php
+                                                $totalPrice = $order->total_price ?? 0;
+                                                $amountPaid = $order->amount_paid ?? 0;
+                                                $remainingPayment = max(0, $totalPrice - $amountPaid);
+                                            @endphp
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0;">
+                                                <span style="font-weight: 600; color: #333;">Total Harga</span>
+                                                <span style="color: #a8729a; font-weight: 600;">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0;">
+                                                <span style="font-weight: 600; color: #333;">Pembayaran Diterima</span>
+                                                <span style="color: #28a745; font-weight: 600;">Rp {{ number_format($amountPaid, 0, ',', '.') }}</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; padding-top: 8px;">
+                                                <span style="font-weight: 600; color: #333;">Sisa Pembayaran</span>
+                                                <span style="color: @if($remainingPayment == 0) #28a745 @else #dc2626 @endif; font-weight: 600; font-size: 16px;">Rp {{ number_format($remainingPayment, 0, ',', '.') }}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>

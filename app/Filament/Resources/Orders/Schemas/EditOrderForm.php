@@ -36,6 +36,113 @@ class EditOrderForm
                             DatePicker::make('event_date')
                                 ->label('Tanggal Acara')
                                 ->required(),
+                            Textarea::make('alamat')
+                                ->required()
+                                ->label('Alamat Acara')
+                                ->columnSpanFull(),
+                            Textarea::make('notes')
+                                ->label('Catatan')  
+                                ->columnSpanFull(),
+                    ]),
+                    Section::make('Paket dan Layanan')
+                    ->schema([
+                        Select::make('package_id')
+                            ->relationship('package', 'name')
+                            ->label('Paket')
+                            ->searchable()
+                            ->preload()
+                            ->reactive()
+                            ->required()
+                            ->afterStateUpdated(function ($state, $set) {
+                                if (! $state) {
+                                    $set('selected_service_ids', []);
+                                    $set('base_price', 0);
+                                    $set('total_price', 0);
+                                    return;
+                                }
+                                $package = \App\Models\Package::find($state);
+                                if (! $package) {
+                                    $set('selected_service_ids', []);
+                                    $set('base_price', 0);
+                                    $set('total_price', 0);
+                                    return;
+                                }
+                                // default select all services from this package
+                                $serviceIds = $package->services->pluck('id')->toArray();
+                                $set('selected_service_ids', $serviceIds);
+
+                                // Harga paket asli
+                                $packagePrice = (float) ($package->price ?? 0);
+                                $set('package_price', $packagePrice);
+
+                                // Hitung unselected (awal = none)
+                                $unselectedServices = $package->services->whereNotIn('id', $serviceIds);
+
+                                $unselectedTotal = $unselectedServices->sum(function ($service) {
+                                    $pivotPrice = (float) ($service->pivot->value_price ?? 0);
+
+                                    if ($pivotPrice > 0) return $pivotPrice;
+
+                                    return (float) ($service->harga_layanan ?? 0);
+                                });
+
+                                $basePrice = max(0, $packagePrice - $unselectedTotal);
+
+                                $set('base_price', $basePrice);
+                                $set('total_price', $basePrice);
+                            }),
+
+                        // Hanya Layanan yang dipilih
+                        CheckboxList::make('all_service_ids')
+                            ->label('Layanan (Dipilih)')
+                            ->columns(3)
+                            ->options(function ($get, $livewire) {
+                                $record = $livewire->record;
+
+                                if (! $record || ! $record->exists) {
+                                    return [];
+                                }
+                                return $record->services()
+                                    ->pluck('service_name', 'service_id')
+                                    ->mapWithKeys(fn ($name, $id) => [(string) $id => $name])
+                                    ->toArray();
+                                
+                            })
+                            ->reactive()
+                            ->afterStateHydrated(function ($component, $livewire) {
+                                $record = $livewire->record;
+
+                                if (! $record || ! $record->exists) {
+                                    return;
+                                }
+
+                                $component->state(
+                                    $record->services()
+                                        ->pluck('service_id')
+                                        ->map(fn ($id) => (string) $id)
+                                        ->toArray()
+                                );
+                            })
+                            ->disabled()
+                            ->columnSpanFull()
+                            ->visible(fn ($livewire) =>
+                                $livewire instanceof \Filament\Resources\Pages\EditRecord
+                            ),
+                        TextInput::make('base_price')
+                            ->label('Harga Paket (Terpilih)')
+                            ->numeric()
+                            ->prefix('Rp')
+                            ->disabled()
+                            ->dehydrated()
+                            ->columnSpanFull(),
+
+                        TextInput::make('total_price')
+                            ->label('Total Harga')
+                            ->numeric()
+                            ->prefix('Rp')
+                            ->disabled()
+                            ->dehydrated()
+                            ->columnSpanFull(),
                     ]),
                     Section::make('Detail Pembayaran')
                         ->schema([
@@ -71,124 +178,50 @@ class EditOrderForm
                                 ->visible(fn ($livewire) =>
                                     in_array($livewire->record?->status, ['paid in progress'])
                                 ),
-                    ]),
-                    Textarea::make('alamat')
-                        ->label('Alamat Acara')
-                        ->required()
-                        ->columnSpanFull(),
-                    Textarea::make('notes')
-                        ->label('Catatan')  
-                        ->columnSpanFull(),
-                    Textarea::make('payment_note')
-                        ->label('Catatan Pembayaran')
-                        ->rows(4)
-                        ->placeholder('Contoh: Menunggu konfirmasi admin / Bukti transfer belum jelas')
-                        ->helperText('Catatan internal terkait proses pembayaran')
+                                TextInput::make('amount_paid')
+                        ->label('Pembayaran Diterima')
+                        ->numeric()
+                        ->prefix('Rp')
                         ->nullable()
                         ->columnSpanFull()
+                        ->reactive()
+                        ->afterStateUpdated(fn ($set, $get) => $set('remaining_payment', max(0, (float)($get('total_price') ?? 0) - (float)($get('amount_paid') ?? 0))))
+                        ->helperText('Jumlah pembayaran yang sudah diterima dari pelanggan')
                         ->visible(fn ($livewire) =>
                             in_array($livewire->record?->status, [
                                 'paid in progress',
                             ])
                         ),
-                    Select::make('package_id')
-                        ->relationship('package', 'name')
-                        ->label('Paket')
-                        ->searchable()
-                        ->preload()
-                        ->reactive()
-                        ->required()
-                        ->afterStateUpdated(function ($state, $set) {
-                            if (! $state) {
-                                $set('selected_service_ids', []);
-                                $set('base_price', 0);
-                                $set('total_price', 0);
-                                return;
-                            }
-                            $package = \App\Models\Package::find($state);
-                            if (! $package) {
-                                $set('selected_service_ids', []);
-                                $set('base_price', 0);
-                                $set('total_price', 0);
-                                return;
-                            }
-                            // default select all services from this package
-                            $serviceIds = $package->services->pluck('id')->toArray();
-                            $set('selected_service_ids', $serviceIds);
-
-                            // Harga paket asli
-                            $packagePrice = (float) ($package->price ?? 0);
-                            $set('package_price', $packagePrice);
-
-                            // Hitung unselected (awal = none)
-                            $unselectedServices = $package->services->whereNotIn('id', $serviceIds);
-
-                            $unselectedTotal = $unselectedServices->sum(function ($service) {
-                                $pivotPrice = (float) ($service->pivot->value_price ?? 0);
-
-                                if ($pivotPrice > 0) return $pivotPrice;
-
-                                return (float) ($service->harga_layanan ?? 0);
-                            });
-
-                            $basePrice = max(0, $packagePrice - $unselectedTotal);
-
-                            $set('base_price', $basePrice);
-                            $set('total_price', $basePrice);
-                        }),
-
-                    // Hanya Layanan yang dipilih
-                    CheckboxList::make('all_service_ids')
-                        ->label('Layanan (Dipilih)')
-                        ->columns(3)
-                        ->options(function ($get, $livewire) {
-                            $record = $livewire->record;
-
-                            if (! $record || ! $record->exists) {
-                                return [];
-                            }
-                            return $record->services()
-                                ->pluck('service_name', 'service_id')
-                                ->mapWithKeys(fn ($name, $id) => [(string) $id => $name])
-                                ->toArray();
-                            
-                        })
-                        ->reactive()
-                        ->afterStateHydrated(function ($component, $livewire) {
-                            $record = $livewire->record;
-
-                            if (! $record || ! $record->exists) {
-                                return;
-                            }
-
-                            $component->state(
-                                $record->services()
-                                    ->pluck('service_id')
-                                    ->map(fn ($id) => (string) $id)
-                                    ->toArray()
-                            );
-                        })
+                    TextInput::make('remaining_payment')
+                        ->label('Sisa Pembayaran')
+                        ->numeric()
+                        ->prefix('Rp')
                         ->disabled()
+                        ->dehydrated()
                         ->columnSpanFull()
+                        ->reactive()
+                        ->formatStateUsing(function ($state, $get) {
+                            $totalPrice = (float) ($get('total_price') ?? 0);
+                            $amountPaid = (float) ($get('amount_paid') ?? 0);
+                            return max(0, $totalPrice - $amountPaid);
+                        })
                         ->visible(fn ($livewire) =>
-                            $livewire instanceof \Filament\Resources\Pages\EditRecord
+                            in_array($livewire->record?->status, [
+                                'paid in progress',
+                            ])
                         ),
-                    TextInput::make('base_price')
-                        ->label('Harga Paket (Terpilih)')
-                        ->numeric()
-                        ->prefix('Rp')
-                        ->disabled()
-                        ->dehydrated()
-                        ->columnSpanFull(),
-
-                    TextInput::make('total_price')
-                        ->label('Total Harga')
-                        ->numeric()
-                        ->prefix('Rp')
-                        ->disabled()
-                        ->dehydrated()
-                        ->columnSpanFull(),
-            ])
+                    Textarea::make('payment_note')
+                        ->label('Catatan Pembayaran')
+                        ->nullable()
+                        ->columnSpanFull()
+                        ->placeholder('Masukkan catatan terkait pembayaran...')
+                        ->visible(fn ($livewire) =>
+                            in_array($livewire->record?->status, [
+                                'paid in progress',
+                            ])
+                        ),
+                    ]),
+            ]),
         ]);
     }
 }

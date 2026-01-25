@@ -49,16 +49,11 @@ class EditOrder extends EditRecord
                 ->label('Tolak Pembayaran')
                 ->color('danger')
                 ->icon('heroicon-o-x-circle')
-                ->form([
-                    Textarea::make('payment_note')
-                        ->label('Alasan Penolakan')
-                        ->required(),
-                ])
                 ->visible(fn ($record) => $record->status === 'paid in progress')
-                ->action(function ($record, $data) {
+                ->requiresConfirmation()
+                ->action(function ($record) {
                     $record->update([
-                        'status' => 'paid in progress',
-                        'payment_note' => $data['payment_note'],
+                        'status' => 'pending',
                     ]);
                 })
                 ->after(fn () => redirect($this->getResource()::getUrl('index'))),
@@ -84,6 +79,11 @@ class EditOrder extends EditRecord
         
         $data['all_service_ids'] = $allServiceIds;
         
+        // Calculate remaining payment on form load
+        $totalPrice = (float) ($data['total_price'] ?? 0);
+        $amountPaid = (float) ($data['amount_paid'] ?? 0);
+        $data['remaining_payment'] = max(0, $totalPrice - $amountPaid);
+        
         return $data;
     }
 
@@ -94,7 +94,8 @@ class EditOrder extends EditRecord
     {
         unset(
             $data['all_service_ids'],
-            $data['package_price']
+            $data['package_price'],
+            $data['remaining_payment']
         );
         return $data;
     }

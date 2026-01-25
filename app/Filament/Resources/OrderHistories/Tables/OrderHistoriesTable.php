@@ -85,9 +85,6 @@ class OrderHistoriesTable
                         }
                         return $formattedDates;
                     }),
-                SelectFilter::make('changed_by')
-                    ->label('Diubah Oleh')
-                    ->relationship('changer', 'name'),
             ])
             ->recordActions([
                 ViewAction::make()
@@ -145,9 +142,6 @@ class OrderHistoriesTable
             
             Section::make('Bukti Pembayaran')
                 ->schema([
-                    TextEntry::make('order.payment_note')
-                        ->label('Catatan Pembayaran')
-                        ->columnSpanFull(),
                     ImageEntry::make('order.bukti_pembayaran')
                         ->label('Foto Bukti Pembayaran')
                         ->disk('public')

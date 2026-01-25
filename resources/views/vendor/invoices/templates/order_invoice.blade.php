@@ -155,9 +155,48 @@
             text-align: right;
         }
 
-        /* ===== NOTES & PAYMENT ===== */
-        .notes, .payment-info {
-            font-size: 11px;
+        /* ===== REMAINING PAYMENT ===== */
+        .remaining-payment {
+            font-size: 15px;
+            text-align: right;
+        }
+
+        .remaining-payment strong {
+            color: #000000;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* ===== PAYMENT DETAILS ===== */
+        .payment-details {
+            font-size: 15px;
+        }
+
+        .payment-details-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+        }
+
+        .payment-details-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .payment-details-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .payment-details-value {
+            color: #0f4c63;
+            font-weight: bold;
+        }
+
+        .payment-details-value.remaining {
+            color: #dc2626;
         }
 
         /* ===== SIGNATURE ===== */
@@ -251,17 +290,20 @@
 {{-- NOTES --}}
 @if(!empty($order->notes))
 <div class="notes">
-    <strong>Catatan</strong><br><br>
-    {!! nl2br(e($order->notes)) !!}
+    <strong>Catatan</strong>
+    {{($order->notes)}}
+    <br><br>
+    <strong>Catatan Pembayaran</strong>
+    {{($order->payment_note)}}
 </div>
 @endif
-
-{{-- PAYMENT INFO & PAYMENT NOTES --}}
+<br>
+{{-- PAYMENT INFO & SISA PEMBAYARAN --}}
 <div class="payment-section">
     {{-- PAYMENT INFO --}}
     <div class="payment-info">
         <strong>INSTRUKSI PEMBAYARAN</strong><br><br>
-        Bank BCA<br>
+        Bank BCA<br><br>
         No Rek: <strong>1192094903</strong><br>
         A/N Hendri Purnama Putra<br><br>
 
@@ -269,22 +311,35 @@
         {{ $order->event_date ? \Carbon\Carbon::parse($order->event_date)->format('d F Y') : '-' }}
     </div>
 
-    {{-- PAYMENT NOTES --}}
-    @if($order->payment_note)
-    <div class="payment-notes">
-        <strong>Catatan Pembayaran</strong><br><br>
-        @foreach(explode("\n", $order->payment_note) as $note)
-            @if(trim($note))
-            {{ trim($note) }}<br>
+    {{-- SISA PEMBAYARAN --}}
+    @php
+        $totalPrice = $order->total_price ?? 0;
+        $amountPaid = $order->amount_paid ?? 0;
+        $remainingPayment = max(0, $totalPrice - $amountPaid);
+    @endphp
+    <div class="remaining-payment">
+        <div class="payment-details">
+            <div class="payment-details-row">
+                <span class="payment-details-label">Total Harga</span>
+                <span class="payment-details-value">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
+            </div>
+            @if($amountPaid > 0)
+            <div class="payment-details-row">
+                <span class="payment-details-label">Pembayaran Diterima</span>
+                <span class="payment-details-value">Rp {{ number_format($amountPaid, 0, ',', '.') }}</span>
+            </div>
             @endif
-        @endforeach
+            <div class="payment-details-row">
+                <span class="payment-details-label">Sisa Pembayaran</span>
+                <span class="payment-details-value remaining">Rp {{ number_format($remainingPayment, 0, ',', '.') }}</span>
+            </div>
+        </div>
     </div>
-    @endif
 </div>
 
 {{-- SIGNATURE --}}
 <div class="signature">
-    Hormat Kami,<br><br><br>
+    Hormat Kami,<br><br><br><br>
     <strong>HENDRI PURNAMA PUTRA</strong><br>
     Company CEO
 </div>

@@ -70,31 +70,7 @@ class OrderInvoiceService
         // Catatan Layanan Tambahan
         $paymentRows = [];
 
-        if (! empty($order->payment_note)) {
-            $paymentRows = collect(explode("\n", $order->payment_note))
-                ->map(function ($line) {
-                    [$label, $date, $amount] = array_pad(
-                        array_map('trim', explode('|', $line)),
-                        3,
-                        null
-                    );
-
-                    return [
-                        'label' => $label,
-                        'date' => $date,
-                        'amount' => (float) $amount,
-                    ];
-                })
-                ->filter(fn ($row) => $row['label'])
-                ->values()
-                ->toArray();
-        }
-
         // Catatan Pembayaran (TAMPIL JIKA ADA)
-        if (! empty($order->payment_note)) {
-            $notes[] = "<strong>Catatan Pembayaran:</strong><br>" 
-                . nl2br($clean($order->payment_note));
-        }
         $allNotes = implode('<br><br>', $notes);
 
         // Render view with order data

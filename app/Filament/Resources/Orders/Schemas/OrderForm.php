@@ -134,17 +134,6 @@ class OrderForm
                     )
                     ->columnSpanFull(),
 
-                // tampilkan catatan pembayaran jika ada
-                Textarea::make('payment_note')
-                    ->label('Catatan Pembayaran')
-                    ->disabled()
-                    ->rows(4)
-                    ->dehydrated(false)
-                    ->visible(fn ($livewire) =>
-                        $livewire instanceof \Filament\Resources\Pages\ViewRecord
-                        && filled($livewire->record?->payment_note)
-                    )
-                    ->columnSpanFull(),
                 CheckboxList::make('selected_service_ids')
                     ->label('Layanan Paket')
                     ->columns(3)

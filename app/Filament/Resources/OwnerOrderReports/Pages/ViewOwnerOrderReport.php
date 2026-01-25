@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Filament\Resources\OwnerOrders\Pages;
+namespace App\Filament\Resources\OwnerOrderReports\Pages;
 
-use App\Filament\Resources\OwnerOrders\OwnerOrderResource;
+use App\Filament\Resources\OwnerOrderReports\OwnerOrderReportResource;
 use App\Filament\Resources\OwnerOrders\Schemas\ViewOwnerOrderForm;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 
-class ViewOwnerOrder extends ViewRecord
+class ViewOwnerOrderReport extends ViewRecord
 {
-    //protected static string $resource = OwnerOrderResource::class;
+    protected static string $resource = OwnerOrderReportResource::class;
 
     public function form(Schema $schema): Schema
     {
@@ -22,4 +22,3 @@ class ViewOwnerOrder extends ViewRecord
         return Auth::check() && Auth::user()->role === 'pemilik';
     }
 }
-
