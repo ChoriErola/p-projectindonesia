@@ -45,7 +45,6 @@ class ManageOrderReports extends ManageRecords
                             'all' => 'Semua Data',
                             'by_customer' => 'Pelanggan',
                             'by_service' => 'Paket/Layanan',
-                            'by_status' => 'Status',
                         ])
                         ->required()
                         ->default('all'),
@@ -60,21 +59,18 @@ class ManageOrderReports extends ManageRecords
                             ->mapWithKeys(function ($userId) {
                                 $user = User::find($userId);
                                 return $user ? [$userId => $user->name] : [];
-                            })),
-
-                    Select::make('package_ids')
-                        ->label('Filter Paket (Opsional)')
-                        ->multiple()
-                        ->searchable()
-                        ->preload()
-                        ->options(fn () => Package::pluck('name', 'id')),
-
-                    Select::make('service_ids')
-                        ->label('Filter Layanan (Opsional)')
-                        ->multiple()
-                        ->searchable()
-                        ->preload()
-                        ->options(fn () => Services::pluck('name', 'id')),
+                            })),    
+                    // Select::make('status')
+                    //     ->label('Filter Status Pesanan (Opsional)')
+                    //     ->multiple()
+                    //     ->searchable()
+                    //     ->preload()
+                    //     ->options(fn () => Order::distinct('user_id')
+                    //         ->pluck('user_id')
+                    //         ->mapWithKeys(function ($userId) {
+                    //             $user = User::find($userId);
+                    //             return $user ? [$userId => $user->name] : [];
+                    //         })),    
                 ])
                 ->action(function (array $data) {
                     return $this->exportPdf($data);
