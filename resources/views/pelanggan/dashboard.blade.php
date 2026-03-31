@@ -51,10 +51,14 @@
           <li><a href="#tentangkami">Tentang Kami</a></li>
           <li><a href="#paket">Paket</a></li>
           <li><a href="#layanan">Layanan</a></li>
-          <li>
-            <a href="{{ route('pelanggan.pesanan') }}">
-              Pesanan
+          <li class="dropdown">
+            <a href="#">
+              <span>Pesanan</span> <i class="bi bi-chevron-down dropdown-indicator"></i>
             </a>
+            <ul>
+              <li><a href="{{ route('pelanggan.pesanan') }}" class="dropdown-item">Pesanan Paket</a></li>
+              <li><a href="{{ route('pelanggan.catering-pesanan') }}" class="dropdown-item">Pesanan Catering</a></li>
+            </ul>
           </li>
           <li><a href="#portfolio">Portfolio</a></li>
           <li><a href="#kontak">Kontak</a></li>
@@ -394,7 +398,7 @@
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200">
                   <i class="bi bi-geo-alt"></i>
                   <h3>Alamat</h3>
-                  <p>{{ $contactUs->alamat}}</p>
+                  <p>{{ $contactUs?->alamat ?? 'Tidak tersedia' }}</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -402,7 +406,7 @@
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="300">
                   <i class="bi bi-telephone"></i>
                   <h3>Telepon</h3>
-                  <p>{{ $contactUs->nomor_hp ?? '08117411190' }}</p>
+                  <p>{{ $contactUs?->nomor_hp ?? '08117411190' }}</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -449,9 +453,9 @@
             <span class="sitename">P Project Decoration</span>
           </a>
           <div class="footer-contact pt-3">
-            <p>{{ $contactUs->alamat}}</p>
-            <p><strong>Telepon:</strong> <span>{{ $contactUs->nomor_hp ?? '08117411190' }}</span></p>
-            <p><strong>Email:</strong> <span>{{ $contactUs->email ?? 'nakkawindecoration18@gmail.com' }}</span></p>
+            <p>{{ $contactUs?->alamat ?? 'Tidak tersedia' }}</p>
+            <p><strong>Telepon:</strong> <span>{{ $contactUs?->nomor_hp ?? '08117411190' }}</span></p>
+            <p><strong>Email:</strong> <span>{{ $contactUs?->email ?? 'nakkawindecoration18@gmail.com' }}</span></p>
           </div>
         </div>
 

@@ -12,6 +12,8 @@ use App\Services\OrderInvoiceService;
 use App\Livewire\Auth\Login;
 use App\Livewire\Pelanggan\Orders;
 use App\Livewire\Pelanggan\OrdersCreate;
+use App\Livewire\Pelanggan\CateringOrders;
+use App\Livewire\Pelanggan\CateringOrdersCreate;
 use App\Models\ContactUs;
 
 Route::get('/login', Login::class)
@@ -64,6 +66,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/pelanggan/pesanan/{order}/invoice', function (Order $order) {
         return \App\Livewire\Pelanggan\InvoiceShow::generate($order);
     })->name('pelanggan.pesanan.invoice');
+    Route::get('/pelanggan/catering-pesanan', CateringOrders::class)
+        ->name('pelanggan.catering-pesanan');
+    Route::get('/pelanggan/catering-pesanan/buat', CateringOrdersCreate::class)
+        ->name('pelanggan.catering-pesanan.create');
 });
 
 // Frontend order creation (public view)

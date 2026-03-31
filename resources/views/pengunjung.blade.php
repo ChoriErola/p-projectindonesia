@@ -358,7 +358,7 @@
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Contact</h2>
-        <p>{{ $contactUs->subtitle ?? 'Hubungi Kami' }}</p>
+        <p>{{ $contactUs?->subtitle ?? 'Hubungi Kami' }}</p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -371,7 +371,7 @@
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200">
                   <i class="bi bi-geo-alt"></i>
                   <h3>Alamat</h3>
-                  <p>{{ $contactUs->alamat}}</p>
+                  <p>{{ $contactUs?->alamat ?? 'Tidak tersedia' }}</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -379,7 +379,7 @@
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="300">
                   <i class="bi bi-telephone"></i>
                   <h3>Kontak</h3>
-                  <p>{{ $contactUs->nomor_hp ?? '08117411190' }}</p>
+                  <p>{{ $contactUs?->nomor_hp ?? '08117411190' }}</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -387,7 +387,7 @@
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="400">
                   <i class="bi bi-envelope"></i>
                   <h3>Email</h3>
-                  <p>{{ $contactUs->email ?? 'nakkawindecoration18@gmail.com' }}</p>
+                  <p>{{ $contactUs?->email ?? 'nakkawindecoration18@gmail.com' }}</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -396,8 +396,8 @@
 
           <div class="col-lg-6">
             <iframe 
-              src="{{ $contactUs->map_url 
-                ?? 'https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3988.2053863622114!2d103.660432!3d-1.629236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMcKwMzcnNDUuMyJTIDEwM8KwMzknMzcuNiJF!5e0!3m2!1sen!2sid!4v1766817015216!5m2!1sen!2sid' }}"
+              src="{{ $contactUs?->map_url 
+                ?? 'https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3988.2053863622114!2d103.660432!3d-1.629236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMcKwMzcjNDUuMyJTIDEwM8KwMzknMzcuNiJF!5e0!3m2!1sen!2sid!4v1766817015216!5m2!1sen!2sid' }}"
               style="border:0; width: 100%; height: 370px;"
               frameborder="0"
               allowfullscreen
@@ -426,9 +426,9 @@
             <span class="sitename">P Project Decoration</span>
           </a>
           <div class="footer-contact pt-3">
-            <p>{{ $contactUs->alamat}}</p>
-            <p><strong>Telepon:</strong> <span>{{ $contactUs->nomor_hp ?? '08117411190' }}</span></p>
-            <p><strong>Email:</strong> <span>{{ $contactUs->email ?? 'nakkawindecoration18@gmail.com' }}</span></p>
+            <p>{{ $contactUs?->alamat ?? 'Tidak tersedia' }}</p>
+            <p><strong>Telepon:</strong> <span>{{ $contactUs?->nomor_hp ?? '08117411190' }}</span></p>
+            <p><strong>Email:</strong> <span>{{ $contactUs?->email ?? 'nakkawindecoration18@gmail.com' }}</span></p>
           </div>
         </div>
 

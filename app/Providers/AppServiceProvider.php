@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,7 +24,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //Order::observe(OrderObserver::class);
+        // Force HTTPS hanya di production
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
+        URL::forceRootUrl(config('app.url'));
+    
         Carbon::setLocale('id');
 
         Validator::resolver(function (
