@@ -3,7 +3,6 @@
 namespace App\Livewire\Pelanggan;
 
 use App\Models\CateringOrder;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Livewire\Component;
